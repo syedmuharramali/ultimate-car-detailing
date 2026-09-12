@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-graphite: #17171a;
+  --color-panel: #232326;
+  --color-panel-2: #2b2b30;
+  --color-bone: #f3f1ea;
+  --color-gold: #c6a15b;
+  --color-gold-dim: #8f7440;
+  --color-teal: #2b4a52;
+  --color-good: #4c9a6a;
+  --color-warn: #c68c4e;
+  --color-danger: #c25c5c;
+
+  --font-display: "Big Shoulders Display", sans-serif;
+  --font-body: "Manrope", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-graphite);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-graphite);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
