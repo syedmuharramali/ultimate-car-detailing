@@ -9,8 +9,11 @@ const app = express();
 
 const allowedOrigins = (process.env.CLIENT_ORIGINS || "*").split(",").map((s) => s.trim());
 
+// Render/Railway place the app behind one reverse proxy. This preserves the
+// customer's IP address for rate limiting while keeping local development working.
+app.set("trust proxy", 1);
 app.use(cors({ origin: allowedOrigins.includes("*") ? true : allowedOrigins }));
-app.use(express.json());
+app.use(express.json({ limit: "20kb" }));
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 

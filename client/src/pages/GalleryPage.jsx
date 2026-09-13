@@ -37,11 +37,11 @@ export default function GalleryPage() {
             <div key={pair.label} className="overflow-hidden rounded-sm border border-white/10">
               <div className="grid grid-cols-2">
                 <div className="relative">
-                  <img src={pair.before} alt={`${pair.label} before`} className="h-64 w-full object-cover" />
+                  <img src={pair.before} alt={`${pair.label} before`} loading="lazy" decoding="async" className="h-64 w-full object-cover" />
                   <span className="absolute bottom-2 left-2 rounded-full bg-graphite/80 px-2.5 py-1 font-body text-xs uppercase tracking-wider text-bone/80">Before</span>
                 </div>
                 <div className="relative">
-                  <img src={pair.after} alt={`${pair.label} after`} className="h-64 w-full object-cover" />
+                  <img src={pair.after} alt={`${pair.label} after`} loading="lazy" decoding="async" className="h-64 w-full object-cover" />
                   <span className="absolute bottom-2 left-2 rounded-full bg-gold px-2.5 py-1 font-body text-xs uppercase tracking-wider text-graphite">After</span>
                 </div>
               </div>
@@ -58,7 +58,7 @@ export default function GalleryPage() {
             {FINISHED.map((item) => (
               <TiltCard key={item.caption} className="overflow-hidden rounded-sm border border-white/10" maxTilt={8}>
                 <figure>
-                  <img src={item.src} alt={item.caption} className="h-56 w-full object-cover" />
+                  <img src={item.src} alt={item.caption} loading="lazy" decoding="async" className="h-56 w-full object-cover" />
                   <figcaption className="bg-graphite px-3 py-2.5 font-body text-xs text-bone/55">
                     {item.caption}
                   </figcaption>

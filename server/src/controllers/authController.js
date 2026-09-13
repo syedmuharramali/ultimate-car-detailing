@@ -19,13 +19,18 @@ export async function login(req, res) {
 
     return res.json({ token, admin: { id: admin._id, email: admin.email, name: admin.name } });
   } catch (err) {
-    console.log(err)
-    return res.status(500).json({ message: "Login failed.", error: err.message });
+    console.error("Login failed:", err);
+    return res.status(500).json({ message: "Login failed." });
   }
 }
 
 export async function me(req, res) {
-  const admin = await Admin.findById(req.admin.id).select("-passwordHash");
-  if (!admin) return res.status(404).json({ message: "Admin not found." });
-  return res.json(admin);
+  try {
+    const admin = await Admin.findById(req.admin.id).select("-passwordHash");
+    if (!admin) return res.status(404).json({ message: "Admin not found." });
+    return res.json(admin);
+  } catch (err) {
+    console.error("Could not validate admin session:", err);
+    return res.status(500).json({ message: "Could not validate admin session." });
+  }
 }

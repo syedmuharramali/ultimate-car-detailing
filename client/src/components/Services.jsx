@@ -67,12 +67,16 @@ function PhotoCard({ service }) {
         <img
           src={service.before}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
           style={{ opacity: hover ? 0 : 1 }}
         />
         <img
           src={service.after}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
           style={{ opacity: hover ? 1 : 0 }}
         />
@@ -103,6 +107,8 @@ function ImageCard({ service }) {
       <img
         src={service.image}
         alt=""
+        loading="lazy"
+        decoding="async"
         className="h-full min-h-[220px] w-full object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-graphite via-graphite/10 to-transparent" />

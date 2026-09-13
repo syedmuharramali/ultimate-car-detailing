@@ -19,7 +19,11 @@ export async function createBooking(req, res) {
 
     return res.status(201).json(booking);
   } catch (err) {
-    return res.status(500).json({ message: "Could not create booking.", error: err.message });
+    console.error("Could not create booking:", err);
+    if (err.name === "ValidationError") {
+      return res.status(400).json({ message: "Invalid booking details." });
+    }
+    return res.status(500).json({ message: "Could not create booking." });
   }
 }
 
@@ -30,7 +34,8 @@ export async function listBookings(req, res) {
     const bookings = await Booking.find(filter).sort({ createdAt: -1 });
     return res.json(bookings);
   } catch (err) {
-    return res.status(500).json({ message: "Could not fetch bookings.", error: err.message });
+    console.error("Could not fetch bookings:", err);
+    return res.status(500).json({ message: "Could not fetch bookings." });
   }
 }
 
@@ -46,7 +51,11 @@ export async function updateBookingStatus(req, res) {
 
     return res.json(booking);
   } catch (err) {
-    return res.status(500).json({ message: "Could not update booking.", error: err.message });
+    console.error("Could not update booking:", err);
+    if (err.name === "CastError") {
+      return res.status(400).json({ message: "Invalid booking id." });
+    }
+    return res.status(500).json({ message: "Could not update booking." });
   }
 }
 
@@ -99,6 +108,7 @@ export async function getStats(req, res) {
       total, thisWeekCount, statusBreakdown, serviceBreakdown, bookingsPerDay, repeatCustomers, topService,
     });
   } catch (err) {
-    return res.status(500).json({ message: "Could not compute stats.", error: err.message });
+    console.error("Could not compute booking stats:", err);
+    return res.status(500).json({ message: "Could not compute stats." });
   }
 }

@@ -2,16 +2,25 @@
 @import "tailwindcss";
 
 @theme {
-  --color-graphite: #17171a;
-  --color-panel: #232326;
-  --color-panel-2: #2b2b30;
-  --color-bone: #f3f1ea;
-  --color-gold: #c6a15b;
-  --color-gold-dim: #8f7440;
-  --color-teal: #2b4a52;
-  --color-good: #4c9a6a;
-  --color-warn: #c68c4e;
-  --color-danger: #c25c5c;
+  /* Midnight blue + ice: a cleaner, more automotive palette than the old brown-gold. */
+  --color-graphite: #071117;
+  --color-panel: #0d202a;
+  --color-panel-2: #14323e;
+  --color-bone: #eff7f8;
+  --color-gold: #43c4e7;
+  --color-gold-dim: #1b7d9a;
+  --color-teal: #164958;
+  --color-good: #58c58b;
+  --color-warn: #f0b45d;
+  --color-danger: #ef7373;
+
+  /* These were already used by the navigation but had no matching tokens. */
+  --color-section: #091921;
+  --color-border: #254653;
+  --color-text-primary: #eff7f8;
+  --color-text-secondary: #adc3cb;
+  --color-steel: #73a9ba;
+  --color-base: #071117;
 
   --font-display: "Big Shoulders Display", sans-serif;
   --font-body: "Manrope", sans-serif;
@@ -22,7 +31,10 @@ html {
 }
 
 body {
-  background: var(--color-graphite);
+  background:
+    radial-gradient(circle at 88% -8%, rgb(67 196 231 / 15%), transparent 30rem),
+    radial-gradient(circle at 0% 45%, rgb(22 73 88 / 36%), transparent 32rem),
+    var(--color-graphite);
   color: var(--color-bone);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -39,6 +51,20 @@ input:focus-visible,
 select:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 3px;
+}
+
+/* Repeated CTAs pick up the same crisp, tactile treatment everywhere. */
+a.bg-gold,
+button.bg-gold {
+  box-shadow: 0 10px 28px rgb(67 196 231 / 20%);
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+a.bg-gold:hover,
+button.bg-gold:hover {
+  background-color: #81ddf3;
+  box-shadow: 0 14px 32px rgb(67 196 231 / 32%);
+  transform: translateY(-2px);
 }
 
 @media (prefers-reduced-motion: reduce) {
