@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import CountUp from "../CountUp.jsx";
+import NumberTicker from "@/components/magic/NumberTicker.jsx";
 
 export default function StatCard({ label, value, sub }) {
   return (
@@ -8,13 +8,13 @@ export default function StatCard({ label, value, sub }) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
       transition={{ duration: 0.3 }}
-      className="rounded-sm border border-white/10 bg-panel p-6"
+      className="rounded-sm border border-border bg-panel p-6"
     >
-      <div className="font-body text-xs uppercase tracking-wider text-bone/45">{label}</div>
-      <div className="mt-2 font-display text-4xl font-bold text-gold">
-        <CountUp value={value} />
+      <div className="font-body text-xs uppercase tracking-wider text-text-secondary">{label}</div>
+      <div className="mt-2 font-display text-4xl font-bold text-accent">
+        <NumberTicker value={value} />
       </div>
-      {sub && <div className="mt-1 font-body text-sm text-bone/50">{sub}</div>}
+      {sub && <div className="mt-1 font-body text-sm text-text-secondary">{sub}</div>}
     </motion.div>
   );
 }

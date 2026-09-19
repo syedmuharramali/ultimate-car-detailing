@@ -1,29 +1,176 @@
-@import url("https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap");
+/* Fonts are declared with <link> in index.html, not imported here — an
+   @import is only discovered after this file parses, which serialises the
+   whole font chain behind it and delays first paint. */
 @import "tailwindcss";
+@import "tw-animate-css";
+
+/* ---------------------------------------------------------------------------
+   Graphite & Ember — token layer
+
+   Two vocabularies, one palette:
+
+   1. Brand tokens (graphite / panel / bone / accent / steel …) — what every
+      component in this codebase writes as `bg-graphite`, `text-accent`.
+   2. shadcn semantic tokens (background / primary / border / ring …), mapped
+      onto the same values, so anything pulled from the shadcn or Magic UI
+      registry arrives already wearing our colours instead of default grey.
+
+   The accent was `gold`, then ice-cyan. It is copper now, and the token is
+   named `accent` so the name can never disagree with the value again.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Ground — warm-neutral near-black. Warm, because everything behind it is
+     asphalt, garage light or car paint, and a blue-black ground makes warm
+     paint colours look dirty. */
+  --background: #0c0b0a;
+  --foreground: #f7f4ef;
+
+  --card: #171613;
+  --card-foreground: #f7f4ef;
+
+  --popover: #141210;
+  --popover-foreground: #f7f4ef;
+
+  /* Copper. Dark text sits on it — at this chroma it is too light for white. */
+  --primary: #d2743a;
+  --primary-foreground: #0c0b0a;
+
+  --secondary: #221f1b;
+  --secondary-foreground: #f7f4ef;
+
+  --muted: #221f1b;
+  /* Resolved to a solid rather than bone-at-60%, because this colour lands on
+     photographs as often as on panels, and translucent grey over an image
+     turns to mud. */
+  --muted-foreground: #a29c92;
+
+  --destructive: #d9645f;
+  --destructive-foreground: #0c0b0a;
+
+  /* Translucent on purpose: these hairlines sit over photos as well as flat
+     panels, and a solid line bands visibly against an image. */
+  --border: rgba(247, 244, 239, 0.1);
+  --input: rgba(247, 244, 239, 0.14);
+  --ring: #d2743a;
+
+  --radius: 0.125rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Navbar already writes `border-border`, so this is the single definition of
+     it — brand and shadcn share one source. */
+  --color-border: var(--border);
+}
 
 @theme {
-  /* Midnight blue + ice: a cleaner, more automotive palette than the old brown-gold. */
-  --color-graphite: #071117;
-  --color-panel: #0d202a;
-  --color-panel-2: #14323e;
-  --color-bone: #eff7f8;
-  --color-gold: #43c4e7;
-  --color-gold-dim: #1b7d9a;
-  --color-teal: #164958;
-  --color-good: #58c58b;
-  --color-warn: #f0b45d;
-  --color-danger: #ef7373;
+  /* Brand surfaces */
+  --color-graphite: #0c0b0a;
+  --color-section: #121110;
+  --color-panel: #171613;
+  --color-panel-2: #221f1b;
 
-  /* These were already used by the navigation but had no matching tokens. */
-  --color-section: #091921;
-  --color-border: #254653;
-  --color-text-primary: #eff7f8;
-  --color-text-secondary: #adc3cb;
-  --color-steel: #73a9ba;
-  --color-base: #071117;
+  /* Type */
+  --color-bone: #f7f4ef;
+  --color-text-primary: #f7f4ef;
+  --color-text-secondary: #a29c92;
+
+  /* Copper, three stops */
+  --color-accent: #d2743a;
+  --color-accent-soft: #e8955f;
+  --color-accent-dim: #8a4a24;
+
+  /* The one cool note in a warm palette — the `confirmed` status, and a
+     counterweight wherever copper everywhere would be too much. */
+  --color-steel: #7a8b94;
+
+  --color-good: #5ea87a;
+  --color-warn: #dca83f;
+  --color-danger: #d9645f;
 
   --font-display: "Big Shoulders Display", sans-serif;
-  --font-body: "Manrope", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  /* The third type role: eyebrows, spec figures, anything that should read as
+     measured rather than written. */
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+  /* One easing curve everywhere. This is most of what separates a page that
+     feels considered from one that feels assembled. */
+  --ease-luxe: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-sweep: sweep 6s var(--ease-luxe) infinite;
+  --animate-accordion-down: accordion-down 0.28s var(--ease-luxe);
+  --animate-accordion-up: accordion-up 0.28s var(--ease-luxe);
+}
+
+/* `--color-base` was deliberately dropped: nothing used it as a colour, and in
+   Tailwind v4 it collides with the built-in `text-base` font-size utility,
+   which this codebase does use in six places. */
+
+/* Two identical tracks, so -50% lands exactly on the seam and the loop is
+   invisible. The old single-track version wrapped at -33.333%. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* A slow band of light crossing a surface — the way a work lamp travels over
+   fresh wax. */
+@keyframes sweep {
+  0%,
+  62%,
+  100% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  32% {
+    transform: translateX(340%) skewX(-18deg);
+  }
+}
+
+/* Radix reports the measured panel height on this variable, which is what lets
+   an accordion animate to `auto` — CSS alone cannot. */
+@keyframes accordion-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
 }
 
 html {
@@ -32,43 +179,55 @@ html {
 
 body {
   background:
-    radial-gradient(circle at 88% -8%, rgb(67 196 231 / 15%), transparent 30rem),
-    radial-gradient(circle at 0% 45%, rgb(22 73 88 / 36%), transparent 32rem),
-    var(--color-graphite);
-  color: var(--color-bone);
+    radial-gradient(circle at 88% -8%, rgb(210 116 58 / 12%), transparent 30rem),
+    radial-gradient(circle at 0% 48%, rgb(138 74 36 / 16%), transparent 32rem),
+    var(--background);
+  color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* At 60px the default tracking reads loose. Tightening display type is the
+   cheapest thing that stops a page looking like a template. */
+.font-display {
+  letter-spacing: -0.015em;
 }
 
 ::selection {
-  background: var(--color-gold);
-  color: var(--color-graphite);
+  background: var(--primary);
+  color: var(--primary-foreground);
 }
 
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--color-gold);
+:focus-visible {
+  outline: 2px solid var(--ring);
   outline-offset: 3px;
 }
 
-/* Repeated CTAs pick up the same crisp, tactile treatment everywhere. */
-a.bg-gold,
-button.bg-gold {
-  box-shadow: 0 10px 28px rgb(67 196 231 / 20%);
-  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+/* The old global `a.bg-accent` hover hack was removed here: ShimmerButton and
+   the Button component each own their hover now, and two transform sources on
+   one element made the CTA jump. */
+
+/* Sections below the fold are skipped entirely — no layout, no paint — until
+   they approach the viewport. `contain-intrinsic-size` supplies a placeholder
+   height so the scrollbar doesn't jump as each one is realised. This is the
+   single biggest scroll win on a long image-heavy page, and it is what keeps
+   decoding five service photos from competing with the scroll itself. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
 
-a.bg-gold:hover,
-button.bg-gold:hover {
-  background-color: #81ddf3;
-  box-shadow: 0 14px 32px rgb(67 196 231 / 32%);
-  transform: translateY(-2px);
+/* A dark page with a default light scrollbar looks unfinished on Windows. */
+* {
+  scrollbar-color: var(--secondary) var(--background);
+  scrollbar-width: thin;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

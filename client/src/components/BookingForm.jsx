@@ -1,5 +1,18 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { CheckCircle2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import ShimmerButton from "@/components/magic/ShimmerButton.jsx";
+import { cn } from "@/lib/utils";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -13,8 +26,14 @@ const SERVICES = [
 ];
 
 const initialForm = {
-  name: "", phone: "", vehicle: "", service: SERVICES[5],
-  address: "", preferredDate: "", preferredTime: "", notes: "",
+  name: "",
+  phone: "",
+  vehicle: "",
+  service: SERVICES[5],
+  address: "",
+  preferredDate: "",
+  preferredTime: "",
+  notes: "",
 };
 
 export default function BookingForm() {
@@ -49,7 +68,7 @@ export default function BookingForm() {
       setForm(initialForm);
     } catch (err) {
       setStatus("error");
-      setErrorMsg(err.message || "Couldn't submit. Please call or WhatsApp us instead.");
+      setErrorMsg(err.message || "Couldn't submit. Please call or text us instead.");
     }
   }
 
@@ -59,11 +78,18 @@ export default function BookingForm() {
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 260, damping: 24 }}
-        className="rounded-sm border border-gold/30 bg-panel p-8 text-center"
+        className="flex flex-col items-center rounded-sm border border-accent/30 bg-panel p-10 text-center"
       >
-        <h3 className="font-display text-2xl font-bold text-gold">Request sent.</h3>
-        <p className="mt-2 font-body text-bone/70">We'll text or call you shortly to confirm the time.</p>
-        <button onClick={() => setStatus("idle")} className="mt-6 font-body text-sm text-bone/50 underline hover:text-bone/80">
+        <CheckCircle2 size={34} className="text-accent" />
+        <h3 className="mt-4 font-display text-2xl font-bold uppercase text-bone">Request sent.</h3>
+        <p className="mt-2 font-body text-sm text-text-secondary">
+          We'll text or call you shortly to confirm the time.
+        </p>
+        <button
+          type="button"
+          onClick={() => setStatus("idle")}
+          className="mt-6 font-body text-sm text-bone/50 underline underline-offset-4 transition-colors hover:text-bone"
+        >
           Book another vehicle
         </button>
       </motion.div>
@@ -71,75 +97,132 @@ export default function BookingForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 rounded-sm border border-white/10 bg-panel p-8 sm:grid-cols-2">
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 gap-5 rounded-sm border border-border bg-panel p-6 sm:grid-cols-2 sm:p-8"
+    >
       <div className="sm:col-span-2">
-        <h3 className="font-display text-2xl font-bold text-bone">Request a booking</h3>
-        <p className="mt-1 font-body text-sm text-bone/55">We'll confirm by phone or text — no payment needed now.</p>
+        <h3 className="font-display text-2xl font-bold uppercase text-bone">Request a booking</h3>
+        <p className="mt-1.5 font-body text-sm text-text-secondary">
+          We'll confirm by phone or text — no payment needed now.
+        </p>
       </div>
 
-      <Field label="Full name">
-        <input value={form.name} onChange={(e) => update("name", e.target.value)} className="input" placeholder="Jordan Smith" />
-      </Field>
-      <Field label="Phone number">
-        <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="input" placeholder="416-555-0123" type="tel" />
-      </Field>
-      <Field label="Vehicle (year, make, model)">
-        <input value={form.vehicle} onChange={(e) => update("vehicle", e.target.value)} className="input" placeholder="2022 Honda Civic" />
-      </Field>
-      <Field label="Service">
-        <select value={form.service} onChange={(e) => update("service", e.target.value)} className="input">
-          {SERVICES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
-      </Field>
-      <Field label="Address (where we'll come to)" className="sm:col-span-2">
-        <input value={form.address} onChange={(e) => update("address", e.target.value)} className="input" placeholder="Street, city" />
-      </Field>
-      <Field label="Preferred date">
-        <input value={form.preferredDate} onChange={(e) => update("preferredDate", e.target.value)} className="input" type="date" />
-      </Field>
-      <Field label="Preferred time">
-        <input value={form.preferredTime} onChange={(e) => update("preferredTime", e.target.value)} className="input" type="time" />
-      </Field>
-      <Field label="Anything else we should know?" className="sm:col-span-2">
-        <textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} className="input" rows={3} placeholder="Pet hair, spills, parking instructions, etc." />
+      <Field label="Full name" htmlFor="bf-name">
+        <Input
+          id="bf-name"
+          value={form.name}
+          onChange={(e) => update("name", e.target.value)}
+          placeholder="Jordan Smith"
+          autoComplete="name"
+        />
       </Field>
 
-      {status === "error" && <p className="sm:col-span-2 font-body text-sm text-danger">{errorMsg}</p>}
+      <Field label="Phone number" htmlFor="bf-phone">
+        <Input
+          id="bf-phone"
+          type="tel"
+          inputMode="tel"
+          value={form.phone}
+          onChange={(e) => update("phone", e.target.value)}
+          placeholder="416-555-0123"
+          autoComplete="tel"
+        />
+      </Field>
+
+      <Field label="Vehicle (year, make, model)" htmlFor="bf-vehicle">
+        <Input
+          id="bf-vehicle"
+          value={form.vehicle}
+          onChange={(e) => update("vehicle", e.target.value)}
+          placeholder="2022 Honda Civic"
+        />
+      </Field>
+
+      <Field label="Service" htmlFor="bf-service">
+        <Select value={form.service} onValueChange={(v) => update("service", v)}>
+          <SelectTrigger id="bf-service">
+            <SelectValue placeholder="Choose a service" />
+          </SelectTrigger>
+          <SelectContent>
+            {SERVICES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Field>
+
+      <Field label="Address (where we'll come to)" htmlFor="bf-address" className="sm:col-span-2">
+        <Input
+          id="bf-address"
+          value={form.address}
+          onChange={(e) => update("address", e.target.value)}
+          placeholder="Street, city"
+          autoComplete="street-address"
+        />
+      </Field>
+
+      <Field label="Preferred date" htmlFor="bf-date">
+        <Input
+          id="bf-date"
+          type="date"
+          value={form.preferredDate}
+          onChange={(e) => update("preferredDate", e.target.value)}
+        />
+      </Field>
+
+      <Field label="Preferred time" htmlFor="bf-time">
+        <Input
+          id="bf-time"
+          type="time"
+          value={form.preferredTime}
+          onChange={(e) => update("preferredTime", e.target.value)}
+        />
+      </Field>
+
+      <Field
+        label="Anything else we should know?"
+        htmlFor="bf-notes"
+        className="sm:col-span-2"
+      >
+        <Textarea
+          id="bf-notes"
+          rows={3}
+          value={form.notes}
+          onChange={(e) => update("notes", e.target.value)}
+          placeholder="Pet hair, spills, parking instructions, etc."
+        />
+      </Field>
+
+      {status === "error" && (
+        <p
+          role="alert"
+          className="font-body text-sm text-danger sm:col-span-2"
+        >
+          {errorMsg}
+        </p>
+      )}
 
       <div className="sm:col-span-2">
-        <motion.button
+        <ShimmerButton
           type="submit"
           disabled={status === "submitting"}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full rounded-full bg-gold px-7 py-3 font-body text-sm font-semibold text-graphite disabled:opacity-60"
+          className="h-13 w-full disabled:pointer-events-none disabled:opacity-60"
         >
           {status === "submitting" ? "Sending..." : "Send booking request"}
-        </motion.button>
+        </ShimmerButton>
       </div>
-
-      <style>{`
-        .input {
-          background: #17171A;
-          border: 1px solid rgba(255,255,255,0.12);
-          border-radius: 2px;
-          padding: 0.65rem 0.85rem;
-          color: #F3F1EA;
-          font-family: Manrope, sans-serif;
-          font-size: 0.9rem;
-          width: 100%;
-        }
-        .input:focus { outline: 2px solid #C6A15B; outline-offset: 1px; }
-      `}</style>
     </form>
   );
 }
 
-function Field({ label, children, className = "" }) {
+function Field({ label, htmlFor, children, className = "" }) {
   return (
-    <label className={`flex flex-col gap-1.5 ${className}`}>
-      <span className="font-body text-xs uppercase tracking-wider text-bone/45">{label}</span>
+    <div className={cn("flex flex-col gap-2", className)}>
+      <Label htmlFor={htmlFor}>{label}</Label>
       {children}
-    </label>
+    </div>
   );
 }

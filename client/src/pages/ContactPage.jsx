@@ -15,8 +15,8 @@ export default function ContactPage() {
   return (
     <section className="mx-auto max-w-6xl px-6 pb-28 pt-20">
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }} className="mb-12 max-w-xl">
-        <p className="font-body text-sm uppercase tracking-[0.3em] text-gold">Get in touch</p>
-        <h1 className="mt-3 font-display text-5xl font-bold text-bone sm:text-6xl">Let's book your detail.</h1>
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">Get in touch</p>
+        <h1 className="mt-3 max-w-[14ch] font-display text-[clamp(40px,7vw,68px)] font-extrabold uppercase leading-[0.92] text-bone">Let's book your detail.</h1>
         <p className="mt-4 font-body text-bone/65">Fill in the form and we'll confirm by phone or text — or reach out directly using any of the options below.</p>
       </motion.div>
 
@@ -38,7 +38,7 @@ export default function ContactPage() {
 function ContactRow({ icon: Icon, label, value, href }) {
   const content = (
     <div className="flex items-start gap-4 rounded-sm border border-white/10 bg-panel px-5 py-4">
-      <Icon size={20} className="mt-0.5 text-gold" />
+      <Icon size={20} className="mt-0.5 text-accent" />
       <div>
         <div className="font-body text-xs uppercase tracking-wider text-bone/45">{label}</div>
         <div className="font-body text-sm text-bone/85">{value}</div>

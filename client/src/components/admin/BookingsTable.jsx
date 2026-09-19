@@ -4,7 +4,7 @@ import { api } from "../../lib/adminApi.js";
 
 const STATUS_STYLES = {
   pending: "bg-warn/20 text-warn",
-  confirmed: "bg-teal/40 text-bone",
+  confirmed: "bg-steel/40 text-bone",
   completed: "bg-good/20 text-good",
   cancelled: "bg-danger/20 text-danger",
 };

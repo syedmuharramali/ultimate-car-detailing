@@ -1,20 +1,32 @@
-const ITEMS = ["WE COME TO YOU", "DOORSTEP SERVICE", "PREMIUM PRODUCTS", "SATISFACTION GUARANTEED", "GTA WIDE"];
+const ITEMS = [
+  "We come to you",
+  "Doorstep service",
+  "Premium products",
+  "Satisfaction guaranteed",
+  "GTA wide",
+];
 
+/**
+ * Magic UI — Marquee. Two identical tracks translating by -50% gives a seam
+ * that never shows, which is what the single-track version could not do.
+ */
 export default function Marquee() {
-  const row = ITEMS.join("   \u2726   ") + "   \u2726   ";
   return (
-    <div className="overflow-hidden border-y border-white/10 bg-panel py-3">
-      <div className="flex w-max animate-[scroll_28s_linear_infinite] gap-8">
-        <span className="whitespace-nowrap font-display text-sm tracking-[0.25em] text-bone/60">
-          {row.repeat(3)}
-        </span>
+    <div
+      aria-hidden
+      className="overflow-hidden border-y border-border bg-section"
+    >
+      <div className="flex w-max animate-marquee py-3 font-display text-[15px] font-bold uppercase tracking-[0.24em] text-bone/35">
+        {[0, 1].map((copy) => (
+          <div key={copy} className="flex">
+            {ITEMS.map((item) => (
+              <span key={item} className="whitespace-nowrap px-7">
+                {item} <span className="text-accent-dim">✦</span>
+              </span>
+            ))}
+          </div>
+        ))}
       </div>
-      <style>{`
-        @keyframes scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-33.333%); }
-        }
-      `}</style>
     </div>
   );
 }

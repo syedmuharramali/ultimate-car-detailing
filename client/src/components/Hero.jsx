@@ -1,115 +1,125 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import useFinePointer from "@/lib/useFinePointer.js";
 import { Phone } from "lucide-react";
-import { MagneticLink, MagneticAnchor } from "./Magnetic.jsx";
+import ShimmerButton from "@/components/magic/ShimmerButton.jsx";
+import { Button } from "@/components/ui/button";
 import heroDesktop from "../assets/hero-desktop.webp";
 import heroMobile from "../assets/hero-mobile.webp";
 
 const PHONE = "647-492-2025";
+const TEL = `tel:${PHONE.replace(/-/g, "")}`;
 
 const container = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.15 } },
+  show: { transition: { staggerChildren: 0.11, delayChildren: 0.12 } },
 };
-const line = {
-  hidden: { y: "110%" },
-  show: { y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+const rise = {
+  hidden: { y: "108%" },
+  show: { y: 0, transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] } },
 };
 const fade = {
   hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
 };
+
+const FACTS = ["We come to you", "500+ vehicles detailed", "No payment to book"];
 
 export default function Hero() {
   const sectionRef = useRef(null);
+  // Parallax costs a composite per scroll frame. On a phone the hero is gone
+  // in one swipe and that budget is better spent decoding images.
+  const parallax = useFinePointer();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-
-  // subtle mouse-tracked 3D tilt on the headline block
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
-  const rotateX = useSpring(useTransform(my, [0, 1], [4, -4]), { stiffness: 150, damping: 20 });
-  const rotateY = useSpring(useTransform(mx, [0, 1], [-4, 4]), { stiffness: 150, damping: 20 });
-
-  function handleMouseMove(e) {
-    const rect = sectionRef.current.getBoundingClientRect();
-    mx.set((e.clientX - rect.left) / rect.width);
-    my.set((e.clientY - rect.top) / rect.height);
-  }
-  function handleMouseLeave() {
-    mx.set(0.5);
-    my.set(0.5);
-  }
+  // The photograph drifts slower than the copy — the depth cue that makes a
+  // flat hero read as a scene rather than a banner.
+  const imageYRaw = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
+  const copyYRaw = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const copyFadeRaw = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const imageY = parallax ? imageYRaw : undefined;
+  const copyY = parallax ? copyYRaw : undefined;
+  const copyFade = parallax ? copyFadeRaw : undefined;
 
   return (
-    <section
-      ref={sectionRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative flex min-h-screen items-center overflow-hidden pt-24"
-    >
+    <section ref={sectionRef} className="relative overflow-hidden border-b border-border">
       <motion.div style={{ y: imageY }} className="pointer-events-none absolute inset-0">
         <picture>
           <source media="(max-width: 768px)" srcSet={heroMobile} />
           <img
             src={heroDesktop}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover object-right"
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-[72%_center]"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-r from-graphite via-graphite/85 to-graphite/10 md:from-graphite md:via-graphite/55 md:to-transparent" />
+        <div className="absolute inset-0 bg-[linear-gradient(94deg,#0c0b0a_8%,rgba(12,11,10,0.88)_40%,rgba(12,11,10,0.18)_100%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-graphite via-transparent to-transparent" />
       </motion.div>
 
       <motion.div
-        style={{ y: contentY, opacity: contentOpacity, rotateX, rotateY, transformPerspective: 1200 }}
-        className="relative mx-auto w-full max-w-6xl px-6"
+        style={{ y: copyY, opacity: copyFade }}
+        className="relative mx-auto flex min-h-[clamp(430px,58vh,580px)] w-full max-w-6xl flex-col justify-center px-6 py-12 sm:py-16"
       >
-        <motion.div variants={container} initial="hidden" animate="show" className="max-w-2xl">
-          <div className="mb-6 overflow-hidden">
-            <motion.p variants={fade} className="font-body text-sm uppercase tracking-[0.3em] text-gold">
-              Mobile detailing &middot; GTA &amp; Surrounding Areas
-            </motion.p>
-          </div>
+        <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-[18px]">
+          <motion.p
+            variants={fade}
+            className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-accent"
+          >
+            Mobile detailing · GTA &amp; Surrounding Areas
+          </motion.p>
 
-          <h1 className="font-display text-6xl font-bold leading-[0.95] text-bone sm:text-7xl">
+          {/* Big Shoulders is condensed, so a 13ch measure lands this at three
+              lines. A wider measure sends it to five and the hero swallows the
+              whole viewport. */}
+          <h1 className="max-w-[13ch] font-display text-[clamp(46px,8.6vw,88px)] font-extrabold uppercase leading-[0.92] tracking-[-0.018em] text-bone">
             <span className="block overflow-hidden">
-              <motion.span variants={line} className="block">Every detail</motion.span>
+              <motion.span variants={rise} className="block">
+                Every detail
+              </motion.span>
             </span>
             <span className="block overflow-hidden">
-              <motion.span variants={line} className="block">makes the</motion.span>
-            </span>
-            <span className="block overflow-hidden">
-              <motion.span variants={line} className="block text-gold">difference.</motion.span>
+              <motion.span variants={rise} className="block text-accent">
+                makes the difference.
+              </motion.span>
             </span>
           </h1>
 
-          <motion.p variants={fade} className="mt-6 max-w-md font-body text-base leading-relaxed text-bone/75">
-            We bring premium car detailing straight to your driveway.
-            Interior, exterior, wax and shine — done right, without you
-            lifting a finger.
+          <motion.p
+            variants={fade}
+            className="max-w-[52ch] font-body text-[15px] leading-relaxed text-text-secondary"
+          >
+            We bring the detail shop to your driveway. Interior, exterior, wax, rims
+            and tires — done properly, while you carry on with your day.
           </motion.p>
 
-          <motion.div variants={fade} className="mt-9 flex flex-wrap items-center gap-4">
-            <MagneticLink
-              to="/contact"
-              className="rounded-full bg-gold px-7 py-3 font-body text-sm font-semibold text-graphite"
-            >
+          <motion.div variants={fade} className="mt-1.5 flex flex-wrap items-center gap-3.5">
+            <ShimmerButton as={Link} to="/contact">
               Book your detail
-            </MagneticLink>
-            <MagneticAnchor
-              href={`tel:${PHONE.replace(/-/g, "")}`}
-              className="flex items-center gap-2 font-body text-sm text-bone/80 hover:text-bone"
-            >
-              <Phone size={16} className="text-gold" />
-              {PHONE}
-            </MagneticAnchor>
+            </ShimmerButton>
+            <Button asChild variant="subtle" size="lg">
+              <a href={TEL}>
+                <Phone size={16} className="text-accent" />
+                {PHONE}
+              </a>
+            </Button>
+          </motion.div>
+
+          <motion.div
+            variants={fade}
+            className="mt-1 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11.5px] uppercase tracking-[0.1em] text-bone/40"
+          >
+            {FACTS.map((f) => (
+              <span key={f} className="inline-flex items-center gap-2">
+                <i className="size-[5px] shrink-0 rounded-full bg-accent" />
+                {f}
+              </span>
+            ))}
           </motion.div>
         </motion.div>
       </motion.div>

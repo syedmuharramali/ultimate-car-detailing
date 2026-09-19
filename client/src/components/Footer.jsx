@@ -26,13 +26,13 @@ export default function Footer() {
         </nav>
 
         <div className="flex gap-4">
-          <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-bone/55 transition-colors hover:text-gold">
+          <a href={SOCIALS.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="text-bone/55 transition-colors hover:text-accent">
             <Instagram size={18} />
           </a>
-          <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="text-bone/55 transition-colors hover:text-gold">
+          <a href={SOCIALS.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="text-bone/55 transition-colors hover:text-accent">
             <Facebook size={18} />
           </a>
-          <a href={SOCIALS.email} aria-label="Email" className="text-bone/55 transition-colors hover:text-gold">
+          <a href={SOCIALS.email} aria-label="Email" className="text-bone/55 transition-colors hover:text-accent">
             <Mail size={18} />
           </a>
         </div>

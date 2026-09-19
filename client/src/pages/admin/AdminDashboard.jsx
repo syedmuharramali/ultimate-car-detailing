@@ -47,7 +47,7 @@ export default function AdminDashboard() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div className="leading-none">
             <div className="font-display text-xl font-bold text-bone">ULTIMATE</div>
-            <div className="-mt-1 font-display text-[10px] tracking-[0.3em] text-gold">CAR DETAILING · ADMIN</div>
+            <div className="-mt-1 font-display text-[10px] tracking-[0.3em] text-accent">CAR DETAILING · ADMIN</div>
           </div>
           <button onClick={handleLogout} className="font-body text-sm text-bone/55 hover:text-bone">Log out</button>
         </div>
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
                 onClick={() => setFilter(f)}
                 whileTap={{ scale: 0.95 }}
                 className={`rounded-full px-3 py-1.5 font-body text-xs capitalize transition-colors ${
-                  filter === f ? "bg-gold text-graphite" : "text-bone/55 hover:text-bone"
+                  filter === f ? "bg-accent text-graphite" : "text-bone/55 hover:text-bone"
                 }`}
               >
                 {f}

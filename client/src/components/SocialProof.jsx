@@ -1,31 +1,27 @@
-import { Star } from "lucide-react";
-import CountUp from "./CountUp.jsx";
+import { motion } from "framer-motion";
+import NumberTicker from "@/components/magic/NumberTicker.jsx";
+import { RevealGroup, revealItem } from "@/components/magic/Reveal.jsx";
+
+const STATS = [
+  { value: 500, suffix: "+", label: "Vehicles detailed" },
+  { value: 78, suffix: "%", label: "Would recommend us" },
+  { static: "2–4", label: "Hours, full package" },
+  { static: "$0", label: "Due at booking" },
+];
 
 export default function SocialProof() {
   return (
-    <section className="border-y border-white/10">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-white/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        <div className="px-6 py-10 text-center">
-          <div className="font-display text-4xl font-bold text-gold">
-            <CountUp value={500} suffix="+" />
-          </div>
-          <div className="mt-1 font-body text-sm text-bone/60">Vehicles detailed</div>
-        </div>
-        <div className="px-6 py-10 text-center">
-          <div className="font-display text-4xl font-bold text-gold">
-            <CountUp value={78} suffix="%" />
-          </div>
-          <div className="mt-1 font-body text-sm text-bone/60">Customers who recommend us</div>
-        </div>
-        <div className="px-6 py-10 text-center">
-          <div className="flex items-center justify-center gap-1 text-gold">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} size={18} fill="currentColor" strokeWidth={0} />
-            ))}
-          </div>
-          <div className="mt-1 font-body text-sm text-bone/60">Rated by GTA customers</div>
-        </div>
-      </div>
+    <section className="cv-auto mx-auto max-w-6xl px-6 pb-24 sm:pb-28">
+      <RevealGroup className="grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border bg-border lg:grid-cols-4">
+        {STATS.map((s) => (
+          <motion.div key={s.label} variants={revealItem} className="bg-graphite px-5 py-6 sm:px-6 sm:py-7">
+            <b className="block font-display text-[clamp(32px,4.6vw,46px)] font-extrabold leading-none tabular-nums text-accent">
+              {s.static ? s.static : <NumberTicker value={s.value} suffix={s.suffix} />}
+            </b>
+            <span className="mt-2 block font-body text-[12.5px] text-text-secondary">{s.label}</span>
+          </motion.div>
+        ))}
+      </RevealGroup>
     </section>
   );
 }

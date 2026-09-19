@@ -26,8 +26,8 @@ export default function GalleryPage() {
     <>
       <section className="mx-auto max-w-6xl px-6 pb-10 pt-20">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-gold">Our work</p>
-          <h1 className="mt-3 font-display text-5xl font-bold text-bone sm:text-6xl">See the difference.</h1>
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">Our work</p>
+          <h1 className="mt-3 max-w-[14ch] font-display text-[clamp(40px,7vw,68px)] font-extrabold uppercase leading-[0.92] text-bone">See the difference.</h1>
         </motion.div>
       </section>
 
@@ -42,7 +42,7 @@ export default function GalleryPage() {
                 </div>
                 <div className="relative">
                   <img src={pair.after} alt={`${pair.label} after`} loading="lazy" decoding="async" className="h-64 w-full object-cover" />
-                  <span className="absolute bottom-2 left-2 rounded-full bg-gold px-2.5 py-1 font-body text-xs uppercase tracking-wider text-graphite">After</span>
+                  <span className="absolute bottom-2 left-2 rounded-full bg-accent px-2.5 py-1 font-body text-xs uppercase tracking-wider text-graphite">After</span>
                 </div>
               </div>
               <div className="bg-panel px-4 py-3 font-display text-sm font-semibold text-bone">{pair.label} detailing</div>

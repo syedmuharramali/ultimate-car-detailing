@@ -15,8 +15,8 @@ export default function AboutPage() {
     <>
       <section className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 px-6 pb-20 pt-20 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-gold">About us</p>
-          <h1 className="mt-3 font-display text-5xl font-bold text-bone sm:text-6xl">We bring the detail shop to you.</h1>
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">About us</p>
+          <h1 className="mt-3 max-w-[14ch] font-display text-[clamp(40px,7vw,68px)] font-extrabold uppercase leading-[0.92] text-bone">We bring the detail shop to you.</h1>
           <p className="mt-5 max-w-lg font-body leading-relaxed text-bone/70">
             Ultimate Car Detailing is a mobile detailing service built
             around one idea: your car should get showroom-level care
@@ -43,7 +43,7 @@ export default function AboutPage() {
                 viewport={{ once: true, margin: "-10%" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                <v.icon size={28} className="text-gold" />
+                <v.icon size={28} className="text-accent" />
                 <h3 className="mt-4 font-display text-lg font-semibold text-bone">{v.title}</h3>
                 <p className="mt-2 font-body text-sm leading-relaxed text-bone/60">{v.body}</p>
               </motion.div>

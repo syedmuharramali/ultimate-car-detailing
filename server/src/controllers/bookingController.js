@@ -1,6 +1,23 @@
 import Booking, { STATUSES, SERVICES } from "../models/Booking.js";
 import { sendNewBookingEmail } from "../utils/mailer.js";
 
+// Day bucketing happens in the business's timezone, not the server's. The
+// buckets used to be built from server-local dates but filled using
+// toISOString() (UTC), so an evening booking in Toronto landed on the next
+// day's bar in the dashboard chart.
+const TIMEZONE = process.env.TIMEZONE || "America/Toronto";
+const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** Date -> "YYYY-MM-DD" as seen in TIMEZONE. */
+function dayKey(date) {
+  return dayKeyFormatter.format(date);
+}
+
 export async function createBooking(req, res) {
   try {
     const { name, phone, vehicle, service, address, preferredDate, preferredTime, notes } = req.body;
@@ -30,6 +47,13 @@ export async function createBooking(req, res) {
 export async function listBookings(req, res) {
   try {
     const { status } = req.query;
+
+    // Validated against the known statuses. Passing req.query straight into the
+    // filter let `?status[$ne]=pending` through as a Mongo operator object.
+    if (status !== undefined && !STATUSES.includes(status)) {
+      return res.status(400).json({ message: `Status must be one of: ${STATUSES.join(", ")}` });
+    }
+
     const filter = status ? { status } : {};
     const bookings = await Booking.find(filter).sort({ createdAt: -1 });
     return res.json(bookings);
@@ -61,51 +85,59 @@ export async function updateBookingStatus(req, res) {
 
 export async function getStats(req, res) {
   try {
-    const now = new Date();
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const sevenDaysAgo = new Date(startOfToday);
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    const thirtyDaysAgo = new Date(startOfToday);
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+    // Anchored at noon UTC on today's local date, so stepping back whole UTC
+    // days never trips over a DST boundary.
+    const anchor = new Date(`${dayKey(new Date())}T12:00:00Z`);
 
-    const [total, byStatus, byService, last30, allForRepeat] = await Promise.all([
+    const dayKeys = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(anchor);
+      d.setUTCDate(d.getUTCDate() - i);
+      dayKeys.push(d.toISOString().slice(0, 10));
+    }
+
+    // Query window padded a day either side to cover the UTC offset; the exact
+    // filtering is done by day key below.
+    const rangeStart = new Date(`${dayKeys[0]}T00:00:00Z`);
+    rangeStart.setUTCDate(rangeStart.getUTCDate() - 1);
+
+    const [total, byStatus, byService, recent, allForRepeat] = await Promise.all([
       Booking.countDocuments(),
       Booking.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]),
       Booking.aggregate([{ $group: { _id: "$service", count: { $sum: 1 } } }]),
-      Booking.find({ createdAt: { $gte: thirtyDaysAgo } }).select("createdAt"),
+      Booking.find({ createdAt: { $gte: rangeStart } }).select("createdAt"),
       Booking.find().select("phone"),
     ]);
 
-    const dayBuckets = {};
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(thirtyDaysAgo);
-      d.setDate(d.getDate() + i);
-      dayBuckets[d.toISOString().slice(0, 10)] = 0;
-    }
-    for (const b of last30) {
-      const key = b.createdAt.toISOString().slice(0, 10);
+    const dayBuckets = Object.fromEntries(dayKeys.map((k) => [k, 0]));
+    for (const b of recent) {
+      const key = dayKey(b.createdAt);
       if (key in dayBuckets) dayBuckets[key] += 1;
     }
-    const bookingsPerDay = Object.entries(dayBuckets).map(([date, count]) => ({ date, count }));
+    const bookingsPerDay = dayKeys.map((date) => ({ date, count: dayBuckets[date] }));
 
-    const thisWeekCount = bookingsPerDay
-      .filter((d) => new Date(d.date) >= sevenDaysAgo)
-      .reduce((sum, d) => sum + d.count, 0);
+    const thisWeekCount = bookingsPerDay.slice(-7).reduce((sum, d) => sum + d.count, 0);
 
     const phoneCounts = {};
-    for (const b of allForRepeat) phoneCounts[b.phone] = (phoneCounts[b.phone] || 0) + 1;
+    for (const b of allForRepeat) {
+      const phone = (b.phone || "").replace(/\D/g, "");
+      if (!phone) continue;
+      phoneCounts[phone] = (phoneCounts[phone] || 0) + 1;
+    }
     const repeatCustomers = Object.values(phoneCounts).filter((c) => c > 1).length;
 
     const statusBreakdown = STATUSES.reduce((acc, s) => ({ ...acc, [s]: 0 }), {});
-    for (const row of byStatus) statusBreakdown[row._id] = row.count;
+    for (const row of byStatus) {
+      if (row._id in statusBreakdown) statusBreakdown[row._id] = row.count;
+    }
 
     const serviceBreakdown = SERVICES.reduce((acc, s) => ({ ...acc, [s]: 0 }), {});
-    for (const row of byService) serviceBreakdown[row._id] = row.count;
-
-    const topService = Object.entries(serviceBreakdown).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+    for (const row of byService) {
+      if (row._id in serviceBreakdown) serviceBreakdown[row._id] = row.count;
+    }
 
     return res.json({
-      total, thisWeekCount, statusBreakdown, serviceBreakdown, bookingsPerDay, repeatCustomers, topService,
+      total, thisWeekCount, statusBreakdown, serviceBreakdown, bookingsPerDay, repeatCustomers,
     });
   } catch (err) {
     console.error("Could not compute booking stats:", err);

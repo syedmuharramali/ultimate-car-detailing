@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./Navbar.jsx";
 import Footer from "./Footer.jsx";
 import ScrollToTop from "./ScrollToTop.jsx";
+import MobileBookBar from "./MobileBookBar.jsx";
 
 const variants = {
   initial: { opacity: 0, y: 24, scale: 0.99 },
@@ -30,6 +31,9 @@ export default function Layout() {
         </motion.main>
       </AnimatePresence>
       <Footer />
+      <MobileBookBar />
+      {/* Clears the pinned mobile bar so it never covers the footer. */}
+      <div className="h-[84px] md:hidden" aria-hidden />
     </div>
   );
 }

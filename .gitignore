@@ -1,0 +1,37 @@
+# Root .gitignore — covers the whole repo.
+#
+# client/.gitignore and server/.gitignore only apply to paths inside their own
+# folder, so nothing was ignoring an accidental install at the repo root. That
+# is how ~700 node_modules files ended up staged.
+
+# Dependencies — at any depth
+node_modules/
+
+# Environment files — at any depth. Never commit these.
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Deploy platforms
+.vercel
+.netlify
+
+# Keys
+*.pem

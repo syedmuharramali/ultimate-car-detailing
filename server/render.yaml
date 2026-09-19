@@ -1,0 +1,33 @@
+# Render blueprint. In Render: New -> Blueprint -> point it at this repo.
+# Everything marked `sync: false` is a secret and must be entered in the
+# dashboard — never committed here.
+services:
+  - type: web
+    name: ultimate-car-detailing-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TIMEZONE
+        value: America/Toronto
+      # The frontend origin(s) allowed to call this API — no trailing slash.
+      # e.g. https://ultimate-car-detailing.vercel.app
+      - key: CLIENT_ORIGINS
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GMAIL_USER
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
+      - key: NOTIFY_EMAIL
+        sync: false
